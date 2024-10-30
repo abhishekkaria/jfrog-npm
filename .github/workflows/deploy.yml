@@ -10,12 +10,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Print Secrets
-        run: |
-            echo "JFROG_URL: ${{ secrets.JFROG_URL }}"
-            echo "JFROG_REPO: ${{ secrets.JFROG_REPO }}"
-            echo "JFROG_API_KEY: ${{ secrets.JFROG_API_KEY }}"
-
       - name: Checkout code
         uses: actions/checkout@v2
 
@@ -27,10 +21,17 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Configure NPM for JFrog
+        run: |
+          npm config set registry ${{ secrets.JFROG_URL }}/${{ secrets.JFROG_REPO }}
+          npm config set //${{ secrets.JFROG_URL }}/${{ secrets.JFROG_REPO }}:_authToken=${{ secrets.JFROG_API_KEY }}
+
+      - name: Verify NPM Registry
+        run: |
+          echo "Current NPM registry is: $(npm config get registry)"
+
       - name: Publish to JFrog
         env:
           NODE_AUTH_TOKEN: ${{ secrets.JFROG_API_KEY }}
         run: |
-          npm config set //${{ secrets.JFROG_URL }}/${{ secrets.JFROG_REPO }}:_authToken=${{ secrets.JFROG_API_KEY }}
-          npm config list
           npm publish --access public # Adjust access level if necessary
