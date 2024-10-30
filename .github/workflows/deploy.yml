@@ -23,7 +23,7 @@ jobs:
 
       - name: Verify token
         run: |
-          echo "${{ env.AUTH_TOKEN }}"
+          echo "${{ vars.AUTH_TOKEN }}"
 
       - name: Configure NPM for JFrog
         run: |
