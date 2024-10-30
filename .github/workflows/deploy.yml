@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - name: Print Secrets
-          run: |
+        run: |
             echo "JFROG_URL: ${{ secrets.JFROG_URL }}"
             echo "JFROG_REPO: ${{ secrets.JFROG_REPO }}"
             echo "JFROG_API_KEY: ${{ secrets.JFROG_API_KEY }}"
