@@ -1,0 +1,39 @@
+name: Deploy to JFrog
+
+on:
+  push:
+    branches:
+      - main # Change this to your default branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14' # Specify your Node.js version
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Verify token
+        run: |
+          echo "${{ env.AUTH_TOKEN }}"
+
+      - name: Configure NPM for JFrog
+        run: |
+          npm config set registry https://trial7lzs1c.jfrog.io/artifactory/api/npm/test-lilly-npm-local/
+          npm config set //trial7lzs1c.jfrog.io/artifactory/api/npm/test-lilly-npm-local/:_authToken=${{ env.AUTH_TOKEN }}
+      
+      
+
+      - name: Publish to JFrog
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.JFROG_API_KEY }}
+        run: |
+          npm publish --access public # Adjust access level if necessary
