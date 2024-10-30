@@ -28,7 +28,7 @@ jobs:
       - name: Configure NPM for JFrog
         run: |
           npm config set registry https://trial7lzs1c.jfrog.io/artifactory/api/npm/test-lilly-npm-local/
-          npm config set //trial7lzs1c.jfrog.io/artifactory/api/npm/test-lilly-npm-local/:_authToken=${{ env.AUTH_TOKEN }}
+          npm config set //trial7lzs1c.jfrog.io/artifactory/api/npm/test-lilly-npm-local/:_authToken=${{ vars.AUTH_TOKEN }}
       
       
 
