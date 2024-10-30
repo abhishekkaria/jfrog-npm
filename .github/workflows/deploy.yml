@@ -32,7 +32,5 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.JFROG_API_KEY }}
         run: |
           npm config set //${{ secrets.JFROG_URL }}/${{ secrets.JFROG_REPO }}:_authToken=${{ secrets.JFROG_API_KEY }}
+          npm config list
           npm publish --access public # Adjust access level if necessary
-
-      - name: Print NPM Config
-        run: npm config list
