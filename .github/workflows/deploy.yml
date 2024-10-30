@@ -15,9 +15,6 @@ jobs:
             echo "JFROG_URL: ${{ secrets.JFROG_URL }}"
             echo "JFROG_REPO: ${{ secrets.JFROG_REPO }}"
             echo "JFROG_API_KEY: ${{ secrets.JFROG_API_KEY }}"
-        
-      - name: Print NPM Config
-        run: npm config list
 
       - name: Checkout code
         uses: actions/checkout@v2
@@ -36,3 +33,6 @@ jobs:
         run: |
           npm config set //${{ secrets.JFROG_URL }}/${{ secrets.JFROG_REPO }}:_authToken=${{ secrets.JFROG_API_KEY }}
           npm publish --access public # Adjust access level if necessary
+
+      - name: Print NPM Config
+        run: npm config list
