@@ -11,7 +11,7 @@ const MyButton = ({ label, onClick }) => {
 const styles = {
     button: {
         padding: '10px 20px',
-        backgroundColor: 'blue',
+        backgroundColor: 'red',
         color: 'white',
         border: 'none',
         borderRadius: '5px',
