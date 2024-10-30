@@ -25,9 +25,10 @@ jobs:
         run: |
           npm config set registry ${{ secrets.JFROG_REPO }}
           npm config set ${{ secrets.JFROG_URL }}:_authToken=${{ secrets.JFROG_API_KEY }}
-
-      - name: Publish to JFrog
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.JFROG_API_KEY }}
-        run: |
           npm publish --access public # Adjust access level if necessary
+
+      # - name: Publish to JFrog
+      #   env:
+      #     NODE_AUTH_TOKEN: ${{ secrets.JFROG_API_KEY }}
+      #   run: |
+      #     npm publish --access public # Adjust access level if necessary

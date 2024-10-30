@@ -11,8 +11,8 @@ const MyButton = ({ label, onClick }) => {
 const styles = {
     button: {
         padding: '10px 20px',
-        backgroundColor: 'green',
-        color: 'white',
+        backgroundColor: 'yellow',
+        color: 'black',
         border: 'none',
         borderRadius: '5px',
         cursor: 'pointer',
