@@ -59,11 +59,12 @@ jobs:
           # Use npm version to bump the version based on the determined type
           echo ${{ env.VERSION_BUMP }}
           npm version ${{ env.VERSION_BUMP }} -m "Bump version to %s"
-          echo "New version: $(node -p -e "require('./package.json').version")"
+          echo "New version =====> ${{ env.VERSION_BUMP }}"
+          # echo "New version: $(node -p -e "require('./package.json').version")"
 
           # Extract only the version number (assuming vX.Y.Z format)
           # VERSION_NUMBER=${env.VERSION_BUMP##*/}
-          echo "Creating tag: v$VERSION_BUMP"
+          echo "Creating tag: $VERSION_BUMP"
 
           git tag -a "$VERSION_BUMP" -m "Bump version to $VERSION_BUMP"
 
