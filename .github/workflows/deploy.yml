@@ -52,16 +52,9 @@ jobs:
           esac
          
           echo "Version bump type: $VERSION_BUMP"
-          echo "VERSION_BUMP=$VERSION_BUMP" >> $GITHUB_ENV
+          # echo "VERSION_BUMP=$VERSION_BUMP" >> $GITHUB_ENV
 
-      - name: Bump version
-        run: |
-          git config user.name "abhishek karia"
-          git config user.email "abhishek.karia.007@gmail.com"
-
-          # Use npm version to bump the version based on the determined type
-          echo ${{ env.VERSION_BUMP }}
-          npm version ${{ env.VERSION_BUMP }} -m "Bump version to %s"
+          npm version $VERSION_BUMP -m "Bump version to %s"
 
           NEW_VERSION=$(node -p -e "require('./package.json').version")
           echo "New version: $NEW_VERSION"
@@ -72,6 +65,25 @@ jobs:
 
           git tag -a "$NEW_VERSION" -m "Bump version to $NEW_VERSION"
           git push origin $NEW_VERSION
+
+      # - name: Bump version
+      #   run: |
+      #     git config user.name "abhishek karia"
+      #     git config user.email "abhishek.karia.007@gmail.com"
+
+      #     # Use npm version to bump the version based on the determined type
+      #     echo ${{ env.VERSION_BUMP }}
+      #     npm version ${{ env.VERSION_BUMP }} -m "Bump version to %s"
+
+      #     NEW_VERSION=$(node -p -e "require('./package.json').version")
+      #     echo "New version: $NEW_VERSION"
+
+      #     # Extract only the version number (assuming vX.Y.Z format)
+      #     # VERSION_NUMBER=${env.VERSION_BUMP##*/}
+      #     echo "Creating tag: $NEW_VERSION"
+
+      #     git tag -a "$NEW_VERSION" -m "Bump version to $NEW_VERSION"
+      #     git push origin $NEW_VERSION
 
   deploy:
     runs-on: ubuntu-latest
