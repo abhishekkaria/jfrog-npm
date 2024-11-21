@@ -1,62 +1,580 @@
-name: Deploy to JFrog
-
-on:
-  push:
-    branches:
-      - main # Change this to your default branch
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-
-      - name: Check Latest Version
-        run: |
-          echo $(git describe --tags --abbrev=0)
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '14' # Specify your Node.js version
-
-      - name: Install dependencies
-        run: npm install
-
-      # - name: Configure NPM for JFrog
-      #   run: |
-      #     npm config set registry ${{ secrets.JFROG_REPO }}
-      #     npm config set ${{ secrets.JFROG_URL }}:_authToken=${{ secrets.JFROG_API_KEY }}
-      #     npm publish --access public # Adjust access level if necessary
-
-      # - name: Publish to JFrog
-      #   env:
-      #     NODE_AUTH_TOKEN: ${{ secrets.JFROG_API_KEY }}
-      #   run: |
-      #     npm publish --access public # Adjust access level if necessary
-
-
-# name: Print Latest Tag
+# name: Deploy to JFrog
 
 # on:
 #   push:
 #     branches:
-#       - main
+#       - main # Change this to your default branch
 
 # jobs:
-#   print-latest-tag:
+#   deploy:
 #     runs-on: ubuntu-latest
 
 #     steps:
-#       - uses: actions/checkout@v3
+#       - name: Checkout code
+#         uses: actions/checkout@v2
 #         with:
 #           fetch-depth: 0
 
-#       - name: Print Latest Tag
+#       - name: Check Latest Version
 #         run: |
-#           git fetch --all --tags
-#           echo "Latest tag: $(git describe --tags --abbrev=0)"
+#           echo $(git describe --tags --abbrev=0)
+
+#       - name: Set up Node.js
+#         uses: actions/setup-node@v2
+#         with:
+#           node-version: '14' # Specify your Node.js version
+
+#       - name: Install dependencies
+#         run: npm install
+
+#       # - name: Configure NPM for JFrog
+#       #   run: |
+#       #     npm config set registry ${{ secrets.JFROG_REPO }}
+#       #     npm config set ${{ secrets.JFROG_URL }}:_authToken=${{ secrets.JFROG_API_KEY }}
+#       #     npm publish --access public # Adjust access level if necessary
+
+#       # - name: Publish to JFrog
+#       #   env:
+#       #     NODE_AUTH_TOKEN: ${{ secrets.JFROG_API_KEY }}
+#       #   run: |
+#       #     npm publish --access public # Adjust access level if necessary
+
+
+# # name: Print Latest Tag
+
+# # on:
+# #   push:
+# #     branches:
+# #       - main
+
+# # jobs:
+# #   print-latest-tag:
+# #     runs-on: ubuntu-latest
+
+# #     steps:
+# #       - uses: actions/checkout@v3
+# #         with:
+# #           fetch-depth: 0
+
+# #       - name: Print Latest Tag
+# #         run: |
+# #           git fetch --all --tags
+# #           echo "Latest tag: $(git describe --tags --abbrev=0)"
+
+
+
+name: Artifactory NPM CD
+
+ 
+
+# on:
+
+#   release:
+
+#     types: [ published ]
+
+ 
+
+on:
+
+  push:
+
+    branches: [ sd-517-cst-btn ]
+
+ 
+
+env:
+
+  ENTERPRISE_ACTIONS_REPO: 
+
+  ENTERPRISE_ACTIONS_REPO_REF: refs/tags/v1.51.19
+
+ 
+
+jobs:
+
+  setup:
+
+    name: Setup
+
+    runs-on: ubuntu-latest
+
+    timeout-minutes: 5
+
+ 
+
+    permissions:
+
+      actions: write
+
+      contents: read
+
+ 
+
+    outputs:
+
+      app_node_version: ${{ env.appNodeVersion }}
+
+      package_name: ${{ env.packageName }}
+
+      package_version: ${{ env.packageVersion }}
+
+ 
+
+    steps:
+
+      - name: Checkout Repo
+
+        uses: actions/checkout@v3
+
+ 
+
+      - name: Get Event Data
+
+        run: |
+
+          echo "Event type: ${{ github.event_name }}"
+
+          if [[ ${{ github.event_name }} == "pull_request" ]]
+
+          then
+
+            echo "Source Branch: ${{ github.head_ref }}"
+
+            echo "Target Branch: ${{ github.base_ref }}"
+
+          else
+
+            echo "Triggered by branch/tag: ${{ github.ref }}"
+
+          fi
+
+          echo "Commit Sha: ${{ github.sha }}"
+
+          echo "Event Actor: ${{ github.actor }}"
+
+ 
+
+      - name: Cancel Previous Runs
+
+        uses: styfle/cancel-workflow-action@0.11.0
+
+        with:
+
+          access_token: ${{ github.token }}
+
+ 
+
+      - name: Checkout Enterprise Actions
+
+        uses: actions/checkout@v3
+
+        with:
+
+          repository: ${{ env.ENTERPRISE_ACTIONS_REPO }}
+
+          ref: ${{ env.ENTERPRISE_ACTIONS_REPO_REF }}
+
+          token: ${{ secrets.GITHUBREADONLY }}
+
+          persist-credentials: false
+
+          path: ./enterprise-actions
+
+ 
+
+      - name: Set Environment Variables from YAML Config
+
+        id: actionsconfig
+
+        uses: ./enterprise-actions/actions/set-env-from-yml-config
+
+        with:
+
+          path: .github/workflows/config/npm-actions-config.yml
+
+ 
+
+      - name: Read and Upload Application Node Package Data
+
+        uses: ./enterprise-actions/actions/npm-package-artifact-action
+
+        with:
+
+          name: npm-package-data
+
+          path: ${{ env.package-json-location }}
+
+          retention-days: 1
+
+ 
+
+      - name: Save Config Data as Environment Variables
+
+        uses: ./enterprise-actions/actions/env-vars-from-config-action
+
+        with:
+
+          name: npm-package-data
+
+ 
+
+  check_app_version:
+
+    name: Version Check
+
+    runs-on: ubuntu-latest
+
+    timeout-minutes: 5
+
+    needs: [ setup ]
+
+ 
+
+    permissions:
+
+      actions: read
+
+      contents: read
+
+ 
+
+    steps:
+
+      - name: Checkout Repo
+
+        uses: actions/checkout@v3
+
+ 
+
+      - name: Checkout Enterprise Actions
+
+        uses: actions/checkout@v3
+
+        with:
+
+          repository: ${{ env.ENTERPRISE_ACTIONS_REPO }}
+
+          ref: ${{ env.ENTERPRISE_ACTIONS_REPO_REF }}
+
+          token: ${{ secrets.GITHUBREADONLY }}
+
+          persist-credentials: false
+
+          path: ./enterprise-actions
+
+ 
+
+      - name: Check Module Version
+
+        id: versionCheck
+
+        uses: ./enterprise-actions/actions/version-check-action
+
+        with:
+
+          module-name: ${{ needs.setup.outputs.package_name }}
+
+          version: ${{ needs.setup.outputs.package_version }}
+
+          repo-name: "abc-node-package-manager"
+
+          branch-name: ${{ github.base_ref }}
+
+        env:
+
+          ARTIFACTORY_API_KEY: ${{ secrets.JF_ARTIFACTORY_VERSION_TOKEN }}
+
+ 
+
+      - name: Confirm Version Check Results
+
+        run: |
+
+          echo "Output from Version Check Step - version-valid: ${{ steps.versionCheck.outputs.version-valid }}"
+
+          echo "Output from Version Check Step - version-message: ${{ steps.versionCheck.outputs.version-message }}"
+
+ 
+
+  package_name_cleanup:
+
+    name: Clean Package Name
+
+    runs-on: ubuntu-latest
+
+    timeout-minutes: 1
+
+    needs: [ setup ]
+
+ 
+
+    env:
+
+      PACKAGE_NAME: ${{ needs.setup.outputs.package_name }}
+
+ 
+
+    outputs:
+
+      cleaned_package_name: ${{ steps.clean_package_name.outputs.cleaned_package_name }}
+
+ 
+
+    permissions:
+
+      actions: read
+
+      contents: read
+
+ 
+
+    steps:
+
+      - name: Clean Package Name
+
+        id: clean_package_name
+
+        shell: bash
+
+        run: |
+
+          if [[ $PACKAGE_NAME == *"@abc/"* ]];
+
+          then
+
+              NO_FOWARD_SLASH=$(echo $PACKAGE_NAME | sed -e 's/\//-/g')
+
+              CLEANED_PACKAGE_NAME=$(echo $NO_FOWARD_SLASH | sed -e 's/@//g')
+
+              echo "cleaned_package_name=$CLEANED_PACKAGE_NAME" >> $GITHUB_OUTPUT
+
+          else
+
+              echo "cleaned_package_name=$PACKAGE_NAME" >> $GITHUB_OUTPUT
+
+          fi
+
+ 
+
+  package_versioning:
+
+    name: NPM Package Bump Up
+
+    runs-on: ubuntu-latest
+
+    timeout-minutes: 1
+
+    needs: [ setup ]
+
+ 
+
+    env:
+
+      PACKAGE_NAME: ${{ needs.setup.outputs.package_name }}
+
+ 
+
+    outputs:
+
+      cleaned_package_name: ${{ steps.clean_package_name.outputs.cleaned_package_name }}
+
+ 
+
+    permissions:
+
+      actions: read
+
+      contents: read
+
+ 
+
+    steps:
+
+      - name: Checkout Repo
+
+        uses: actions/checkout@v3
+
+     
+
+      - name: Clean Package Name
+
+        id: clean_package_name
+
+        shell: bash
+
+        run: |
+
+          LATEST_TAG=$(git describe --tags --abbrev=0)
+
+          echo "Latest tag: $LATEST_TAG"
+
+ 
+
+          CURRENT_VERSION="${LATEST_TAG//v/}"
+
+          echo "Current version: $CURRENT_VERSION"
+
+ 
+
+ 
+
+  check_version_numbers_match:
+
+    name: Check Release Tag and Package.Json Versions Match
+
+    runs-on: ubuntu-latest
+
+    timeout-minutes: 1
+
+    needs: [ setup ]
+
+ 
+
+    env:
+
+      PACKAGE_VERSION: ${{ needs.setup.outputs.package_version }}
+
+      RELEASE_VERSION: ${{ github.event.release.tag_name }}
+
+ 
+
+    permissions:
+
+      actions: read
+
+      contents: read
+
+ 
+
+    steps:
+
+      - name: Check Release & Package Version
+
+        id: check_release_package_version
+
+        shell: bash
+
+        run: |
+
+          VERSION_PREFIX='v'
+
+          COMPLETE_VERSION="${VERSION_PREFIX}${PACKAGE_VERSION}"
+
+ 
+
+          if [[ "$RELEASE_VERSION" = "$COMPLETE_VERSION" ]];
+
+          then
+
+              echo "Success! Both Versions Match"
+
+              exit 0
+
+          else
+
+              echo "Failure! Please check and make sure your package.json version and release tag (version) are the same"
+
+              exit 1
+
+          fi
+
+ 
+
+  deployToArtifactory:
+
+    name: Deploy to Artifactory
+
+    runs-on: ubuntu-latest
+
+    timeout-minutes: 15
+
+    needs:
+
+      [
+
+        setup,
+
+        check_app_version,
+
+        package_name_cleanup,
+
+        check_version_numbers_match
+
+      ]
+
+ 
+
+    permissions:
+
+      actions: read
+
+      contents: read
+
+ 
+
+    steps:
+
+      - name: Checkout Repo
+
+        uses: actions/checkout@v3
+
+ 
+
+      - name: Setup Node
+
+        uses: actions/setup-node@v3
+
+        with:
+
+          node-version: ${{ needs.setup.outputs.app_node_version }}
+
+ 
+
+      - name: Install Dependencies
+
+        run: |
+
+          node -v
+
+          npm ci
+
+        env:
+
+          JF_ARTIFACTORY_AUTH: ${{ secrets.JF_ARTIFACTORY_AUTH }}
+
+ 
+
+      - name: NPM Build Project
+
+        run: npm run build --if-present
+
+        env:
+
+          JF_ARTIFACTORY_AUTH: ${{ secrets.JF_ARTIFACTORY_AUTH }}
+
+ 
+
+      # - name: Package Module to Publish
+
+      #   run: npm pack
+
+ 
+
+      # - name: Setup JFrog CLI
+
+      #   uses: jfrog/setup-jfrog-cli@v3
+
+      #   env:
+
+      #     JF_ENV_ENTERPRISE_NODE: ${{ secrets.JF_ARTIFACTORY_DEPLOY_TOKEN  }}
+
+ 
+
+      # - name: Publish to Artifactory
+
+      #   run: |
+
+      #     jfrog rt u "${{ needs.package_name_cleanup.outputs.cleaned_package_name }}-${{ needs.setup.outputs.package_version }}.tgz" "abc-node-package-manager/${{ needs.setup.outputs.package_name }}/" --recursive=false
+
+ 
