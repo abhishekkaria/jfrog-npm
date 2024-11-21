@@ -153,7 +153,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-
+      
     steps:
       - uses: actions/checkout@v3
         with:
@@ -161,7 +161,9 @@ jobs:
 
       - name: Bump version and tag
         run: |
-        
+          git config user.name "abhishek karia"
+          git config user.email "abhishek.karia.007@gmail.com"
+
           npm version patch -m "Bump version to %s"
           NEW_VERSION=$(node -p -e "require('./package.json').version")
           echo "NEW_VERSION: $NEW_VERSION"
