@@ -1,38 +1,60 @@
-name: Deploy to JFrog
+# name: Deploy to JFrog
+
+# on:
+#   push:
+#     branches:
+#       - main # Change this to your default branch
+
+# jobs:
+#   deploy:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v2
+
+#       - name: Check Latest Version
+#         run: |
+#           echo $(git describe --tags --abbrev=0)
+
+#       - name: Set up Node.js
+#         uses: actions/setup-node@v2
+#         with:
+#           node-version: '14' # Specify your Node.js version
+
+#       - name: Install dependencies
+#         run: npm install
+
+#       # - name: Configure NPM for JFrog
+#       #   run: |
+#       #     npm config set registry ${{ secrets.JFROG_REPO }}
+#       #     npm config set ${{ secrets.JFROG_URL }}:_authToken=${{ secrets.JFROG_API_KEY }}
+#       #     npm publish --access public # Adjust access level if necessary
+
+#       # - name: Publish to JFrog
+#       #   env:
+#       #     NODE_AUTH_TOKEN: ${{ secrets.JFROG_API_KEY }}
+#       #   run: |
+#       #     npm publish --access public # Adjust access level if necessary
+
+
+name: Print Latest Tag
 
 on:
   push:
     branches:
-      - main # Change this to your default branch
+      - main
 
 jobs:
-  deploy:
+  print-latest-tag:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Check Latest Version
-        run: |
-          echo $(git describe --tags --abbrev=0)
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
         with:
-          node-version: '14' # Specify your Node.js version
+          fetch-depth: 0
 
-      - name: Install dependencies
-        run: npm install
-
-      # - name: Configure NPM for JFrog
-      #   run: |
-      #     npm config set registry ${{ secrets.JFROG_REPO }}
-      #     npm config set ${{ secrets.JFROG_URL }}:_authToken=${{ secrets.JFROG_API_KEY }}
-      #     npm publish --access public # Adjust access level if necessary
-
-      # - name: Publish to JFrog
-      #   env:
-      #     NODE_AUTH_TOKEN: ${{ secrets.JFROG_API_KEY }}
-      #   run: |
-      #     npm publish --access public # Adjust access level if necessary
+      - name: Print Latest Tag
+        run: |
+          git fetch --all --tags
+          echo "Latest tag: $(git describe --tags --abbrev=0)"
