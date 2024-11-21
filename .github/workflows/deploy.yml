@@ -62,10 +62,10 @@ jobs:
           echo "New version: $(node -p -e "require('./package.json').version")"
 
           # Extract only the version number (assuming vX.Y.Z format)
-          VERSION_NUMBER=${env.VERSION_BUMP##*/}
-          echo "Creating tag: v$VERSION_NUMBER"
+          # VERSION_NUMBER=${env.VERSION_BUMP##*/}
+          echo "Creating tag: v$VERSION_BUMP"
 
-          git tag -a "v$VERSION_NUMBER" -m "Bump version to $VERSION_NUMBER"
+          git tag -a "$VERSION_BUMP" -m "Bump version to $VERSION_BUMP"
 
   deploy:
     runs-on: ubuntu-latest
