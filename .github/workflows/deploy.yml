@@ -13,6 +13,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Check Latest Version
+        uses: actions/checkout@v2
+        run: |
+          LATEST_TAG=$(git describe --tags --abbrev=0)
+          echo "Latest tag: $LATEST_TAG"
+
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
@@ -21,11 +27,11 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Configure NPM for JFrog
-        run: |
-          npm config set registry ${{ secrets.JFROG_REPO }}
-          npm config set ${{ secrets.JFROG_URL }}:_authToken=${{ secrets.JFROG_API_KEY }}
-          npm publish --access public # Adjust access level if necessary
+      # - name: Configure NPM for JFrog
+      #   run: |
+      #     npm config set registry ${{ secrets.JFROG_REPO }}
+      #     npm config set ${{ secrets.JFROG_URL }}:_authToken=${{ secrets.JFROG_API_KEY }}
+      #     npm publish --access public # Adjust access level if necessary
 
       # - name: Publish to JFrog
       #   env:
