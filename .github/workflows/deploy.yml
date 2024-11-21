@@ -55,6 +55,8 @@ jobs:
           echo "VERSION_BUMP=$VERSION_BUMP" >> $GITHUB_ENV
 
       - name: Bump version
+        with:
+            fetch-depth: 0
         run: |
           # Use npm version to bump the version based on the determined type
           echo ${{ env.VERSION_BUMP }}
