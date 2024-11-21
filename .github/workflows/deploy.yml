@@ -79,7 +79,7 @@ on:
 
   push:
 
-    branches: [ sd-517-cst-btn ]
+    branches: [ main ]
 
  
 
