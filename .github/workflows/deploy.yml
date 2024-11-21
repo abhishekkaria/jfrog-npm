@@ -61,6 +61,12 @@ jobs:
           npm version ${{ env.VERSION_BUMP }} -m "Bump version to %s"
           echo "New version: $(node -p -e "require('./package.json').version")"
 
+          # Extract only the version number (assuming vX.Y.Z format)
+          VERSION_NUMBER=${BUMPED_VERSION##*/}
+          echo "Creating tag: v$VERSION_NUMBER"
+
+          git tag -a "v$VERSION_NUMBER" -m "Bump version to $VERSION_NUMBER"
+
   deploy:
     runs-on: ubuntu-latest
 
