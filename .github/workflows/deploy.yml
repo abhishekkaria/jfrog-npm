@@ -56,7 +56,7 @@ jobs:
 
       - name: Bump version
         with:
-            fetch-depth: 0
+          fetch-depth: 0
         run: |
           # Use npm version to bump the version based on the determined type
           echo ${{ env.VERSION_BUMP }}
