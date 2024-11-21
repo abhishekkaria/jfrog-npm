@@ -30,6 +30,34 @@ jobs:
           CURRENT_VERSION="${LATEST_TAG//v/}"
           echo "Current version: $CURRENT_VERSION"
 
+          latest_commit_message=$(git log -1 --pretty=%B)
+          echo "$latest_commit_message"
+ 
+          case "$latest_commit_message" in
+            *major*)
+              echo "major Release"
+              VERSION_BUMP="major"
+             ;;
+            *minor*)
+              echo "minor Release"
+             VERSION_BUMP="minor"
+              ;;
+            *)
+              echo "patch release"
+              VERSION_BUMP="patch"
+              ;;
+          esac
+         
+          echo "Version bump type: $VERSION_BUMP"
+          echo "VERSION_BUMP=$VERSION_BUMP" >> $GITHUB_ENV
+
+      - name: Bump version
+        run: |
+          # Use npm version to bump the version based on the determined type
+          echo ${{ env.VERSION_BUMP }}
+          npm version ${{ env.VERSION_BUMP }} -m "Bump version to %s"
+          echo "New version: $(node -p -e "require('./package.json').version")"
+
   deploy:
     runs-on: ubuntu-latest
 
