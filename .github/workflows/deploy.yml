@@ -244,7 +244,7 @@ jobs:
         run: |
 
           # Define the version number or dynamically calculate it
-          VERSION="v2.0.0"  # You can set this dynamically based on your needs
+          VERSION="v2.0.6"  # You can set this dynamically based on your needs
 
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
