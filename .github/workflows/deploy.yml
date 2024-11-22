@@ -249,13 +249,13 @@ jobs:
           # echo "VERSION=$VERSION" >> $GITHUB_ENV
 
           # Create the tag
-          git tag -a "$VERSION" -m "Release version $VERSION"
+          git tag -a "$NEW_VERSION" -m "Release version $NEW_VERSION"
 
       - name: Push Tag to Remote
         run: |
 
           # Push the created tag to the remote repository
-          git push origin "$VERSION"
+          git push origin "$NEW_VERSION"
 
 
 
