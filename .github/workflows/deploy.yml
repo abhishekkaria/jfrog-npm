@@ -207,15 +207,15 @@ jobs:
           git config user.name "abhishek karia"
           git config user.email "abhishek.karia.007@gmail.com"
 
-      # - name: Bump Patch Version
-      #   run: |
+      - name: Bump Patch Version
+        run: |
 
-      #     # Bump the version (patch) in package.json
-      #     NEW_VERSION=$(npm version patch -m "Bump version to %s" | grep 'v' | cut -d' ' -f3)  # Get the new version number
+          # Bump the version (patch) in package.json
+          NEW_VERSION=$(npm version patch -m "Bump version to %s" | grep 'v' | cut -d' ' -f3)  # Get the new version number
 
-      #     echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV  # Save the new version to the environment variable
+          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV  # Save the new version to the environment variable
 
-      #     echo "New version is $NEW_VERSION"  # Output new version for debugging
+          echo "New version is $NEW_VERSION"  # Output new version for debugging
 
       # - name: Push Changes to Repository
       #   run: |
@@ -244,9 +244,9 @@ jobs:
         run: |
 
           # Define the version number or dynamically calculate it
-          VERSION="v2.0.6"  # You can set this dynamically based on your needs
+          # VERSION="v2.0.6"  # You can set this dynamically based on your needs
 
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          # echo "VERSION=$VERSION" >> $GITHUB_ENV
 
           # Create the tag
           git tag -a "$VERSION" -m "Release version $VERSION"
