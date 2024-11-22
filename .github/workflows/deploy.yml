@@ -56,11 +56,12 @@ jobs:
 
           npm version $VERSION_BUMP -m "Bump version to %s"
 
-          echo "Branch name =>>> ${{ github.ref#refs/heads/ }}"
+          BRANCH_NAME=${GITHUB_REF##*/}
+          echo "Branch name is $BRANCH_NAME"
 
           git add package.json
           git commit -m "Bump version to ${{ steps.bump-version.outputs.newTag }}"
-          git push origin ${{ github.ref#refs/heads/ }}
+          git push origin $BRANCH_NAME
 
           NEW_VERSION=$(node -p -e "require('./package.json').version")
           echo "New version: $NEW_VERSION"
