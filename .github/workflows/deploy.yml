@@ -268,6 +268,9 @@ jobs:
 
       - name: Create Git Tag
         run: |
+          git config user.name "abhishek karia"
+          git config user.email "abhishek.karia.007@gmail.com"
+
           # Define the version number or dynamically calculate it
           VERSION="v2.0.0"  # You can set this dynamically based on your needs
 
