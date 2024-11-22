@@ -196,10 +196,10 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3  # Checkout the repository
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3  # Set up Node.js (to use npm)
-        with:
-          node-version: '16'  # Specify your Node.js version here
+      # - name: Set up Node.js
+      #   uses: actions/setup-node@v3  # Set up Node.js (to use npm)
+      #   with:
+      #     node-version: '16'  # Specify your Node.js version here
 
       - name: Set Git Config
         run: |
