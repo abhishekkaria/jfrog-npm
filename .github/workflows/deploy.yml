@@ -232,8 +232,8 @@ jobs:
       - name: Bump Patch Version
         run: |
 
-          # Bump the version (patch) in package.json
-          npm version patch -m "Bump version to %s"
+          # Bump the version (VERSION_BUMP) in package.json
+          npm version $VERSION_BUMP -m "Bump version to %s"
 
           NEW_VERSION=$(jq -r '.version' package.json)
 
