@@ -203,9 +203,31 @@ jobs:
 
       - name: Set Git Config
         run: |
-
           git config user.name "abhishek karia"
           git config user.email "abhishek.karia.007@gmail.com"
+
+      - name: Decide package Bump Type
+        run: |
+          latest_commit_message=$(git log -1 --pretty=%B)
+          echo "$latest_commit_message"
+ 
+          case "$latest_commit_message" in
+            *major*)
+              echo "major Release"
+              VERSION_BUMP="major"
+             ;;
+            *minor*)
+              echo "minor Release"
+             VERSION_BUMP="minor"
+              ;;
+            *)
+              echo "patch release"
+              VERSION_BUMP="patch"
+              ;;
+          esac
+        
+        echo "Package Bump Type id $VERSION_BUMP"
+        echo "VERSION_BUMP=$VERSION_BUMP" >> $GITHUB_ENV
 
       - name: Bump Patch Version
         run: |
