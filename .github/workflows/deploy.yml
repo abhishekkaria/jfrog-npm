@@ -52,7 +52,6 @@ jobs:
           esac
          
           echo "Version bump type: $VERSION_BUMP"
-          
           npm version $VERSION_BUMP -m "Bump version to %s"
 
           # Fetch remote branches and ensure you're on the right branch
