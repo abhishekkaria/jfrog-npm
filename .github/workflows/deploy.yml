@@ -211,8 +211,8 @@ jobs:
         run: |
 
           # Bump the version (patch) in package.json
-          # NEW_VERSION=$(npm version patch -m "Bump version to %s" | grep 'v' | cut -d' ' -f3)  # Get the new version number
-          NEW_VERSION="v2.0.7"  # Get the new version number
+          NEW_VERSION="$(npm version patch -m "Bump version to %s" | grep 'v' | cut -d' ' -f3)"  # Get the new version number
+          # NEW_VERSION="v2.0.7"  # Get the new version number
 
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV  # Save the new version to the environment variable
 
