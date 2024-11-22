@@ -205,32 +205,16 @@ jobs:
           git config user.name "abhishek karia"
           git config user.email "abhishek.karia.007@gmail.com"
 
-          latest_commit_message=$(git log -1 --pretty=%B)
-          echo "$latest_commit_message"
- 
-          case "$latest_commit_message" in
-            *major*)
-              echo "major Release"
-              VERSION_BUMP="major"
-             ;;
-            *minor*)
-              echo "minor Release"
-             VERSION_BUMP="minor"
-              ;;
-            *)
-              echo "patch release"
-              VERSION_BUMP="patch"
-              ;;
-          esac
+           # Bump the version (patch) in package.json
+          NEW_VERSION=$(npm version patch -m "Bump version to %s" | grep 'v' | cut -d' ' -f3)  # Get the new version number
 
-          # Bump the version (patch) in package.json
-          npm version $VERSION_BUMP -m "Bump version to %s"  # Increment the patch version
+          echo "New version is $NEW_VERSION"  # Output new version for debugging
 
-      - name: Push Changes
+      - name: Push Changes to Repository
         run: |
           # Push the updated package.json file to the repository
           git push origin main  # Push the changes to the main branch
-      
+
       - name: Create and Push Git Tag
         run: |
           # Create a new Git tag with the bumped version
