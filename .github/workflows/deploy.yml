@@ -194,6 +194,7 @@ jobs:
     outputs:
       branch_name: ${GITHUB_REF##*/}
     
+    steps:
       - name: Decide package Bump Type
           run: |
             echo "Branch Name ===> ${{ needs.setup.outputs.branch_name }}"
