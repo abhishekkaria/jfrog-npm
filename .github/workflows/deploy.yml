@@ -210,6 +210,8 @@ jobs:
         run: |
           latest_commit_message=$(git log -1 --pretty=%B)
           echo "$latest_commit_message"
+
+          VERSION_BUMP="patch"
  
           case "$latest_commit_message" in
             *major*)
@@ -226,7 +228,8 @@ jobs:
               ;;
           esac
         
-        echo "Package Bump Type id $VERSION_BUMP"
+        echo "Package Bump Type $VERSION_BUMP"
+        
         echo "VERSION_BUMP=$VERSION_BUMP" >> $GITHUB_ENV
 
       - name: Bump Patch Version
