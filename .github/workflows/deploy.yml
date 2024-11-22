@@ -59,7 +59,7 @@ jobs:
           BRANCH_NAME=${GITHUB_REF##*/}
           echo "Branch name is $BRANCH_NAME"
 
-          git add package.json
+          git add ./package.json
           git commit -m "Bump version to ${{ steps.bump-version.outputs.newTag }}"
           git push origin $BRANCH_NAME
 
