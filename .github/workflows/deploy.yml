@@ -203,15 +203,14 @@ jobs:
 
       - name: Set Git Config
         run: |
+
           git config user.name "abhishek karia"
           git config user.email "abhishek.karia.007@gmail.com"
 
       - name: Bump Patch Version
-        run: | 
-          git config user.name "abhishek karia" 
-          git config user.email "abhishek.karia.007@gmail.com" 
+        run: |
 
-           # Bump the version (patch) in package.json
+          # Bump the version (patch) in package.json
           NEW_VERSION=$(npm version patch -m "Bump version to %s" | grep 'v' | cut -d' ' -f3)  # Get the new version number
 
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV  # Save the new version to the environment variable
@@ -220,16 +219,19 @@ jobs:
 
       - name: Push Changes to Repository
         run: |
+
           # Push the updated package.json file to the repository
           git push origin main  # Push the changes to the main branch
 
       - name: Fetch Tags from Remote
         run: |
+
           # Fetch all remote tags to ensure we have the latest tag list
           git fetch --tags --prune
 
       - name: Check if Tag Exists
         run: |
+
           # Check if the tag already exists in the remote repository
           if git rev-parse "$NEW_VERSION" >/dev/null 2>&1; then
             echo "Tag $NEW_VERSION already exists. Skipping tag creation."
@@ -240,11 +242,13 @@ jobs:
 
       - name: Create and Push Git Tag
         run: |
+
           # Create a new Git tag with the bumped version
           git tag -a "$NEW_VERSION" -m "Bump version to $NEW_VERSION"
 
       - name: Push Tag to Remote
         run: |
+
           # Push the created tag to the remote repository
           git push origin "$VERSION"
 
