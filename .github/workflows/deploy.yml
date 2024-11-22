@@ -207,9 +207,9 @@ jobs:
           git config user.email "abhishek.karia.007@gmail.com"
 
       - name: Bump Patch Version
-        run: |
-          git config user.name "abhishek karia"
-          git config user.email "abhishek.karia.007@gmail.com"
+        run: | 
+          git config user.name "abhishek karia" 
+          git config user.email "abhishek.karia.007@gmail.com" 
 
            # Bump the version (patch) in package.json
           NEW_VERSION=$(npm version patch -m "Bump version to %s" | grep 'v' | cut -d' ' -f3)  # Get the new version number
@@ -243,8 +243,11 @@ jobs:
           # Create a new Git tag with the bumped version
           git tag -a "$NEW_VERSION" -m "Bump version to $NEW_VERSION"
 
-          # Push the tag to the remote repository
-          git push origin "$NEW_VERSION"
+      - name: Push Tag to Remote
+        run: |
+          # Push the created tag to the remote repository
+          git push origin "$VERSION"
+
 
 
 
