@@ -205,8 +205,8 @@ jobs:
           git config user.name "abhishek karia"
           git config user.email "abhishek.karia.007@gmail.com"
 
-           # Bump the version (patch) in package.json
-          NEW_VERSION=$(npm version patch -m "Bump version to %s" | grep 'v' | cut -d' ' -f3)  # Get the new version number
+           # Bump the version (major) in package.json
+          NEW_VERSION=$(npm version major -m "Bump version to %s" | grep 'v' | cut -d' ' -f3)  # Get the new version number
 
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV  # Save the new version to the environment variable
 
