@@ -56,6 +56,10 @@ jobs:
 
           npm version $VERSION_BUMP -m "Bump version to %s"
 
+          # Ensure we have the latest changes from the remote
+          git fetch origin
+          git checkout $BRANCH_NAME  # Ensure you're on the correct branch
+
           BRANCH_NAME=${GITHUB_REF##*/}
           echo "Branch name is $BRANCH_NAME"
 
