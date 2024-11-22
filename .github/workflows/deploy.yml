@@ -220,6 +220,10 @@ jobs:
 
           echo "New version is $NEW_VERSION"  #   Output new version for debugging
 
+          BRANCH_NAME=${GITHUB_REF##*/}
+          echo "Branch name is $BRANCH_NAME"
+          git push origin $BRANCH_NAME
+
       # - name: Push Changes to Repository
       #   run: |
 
