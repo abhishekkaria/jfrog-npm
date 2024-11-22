@@ -227,7 +227,6 @@ jobs:
           esac
         
           echo "Package Bump Type $VERSION_BUMP"
-        
           echo "VERSION_BUMP=$VERSION_BUMP" >> $GITHUB_ENV
 
       - name: Bump Patch Version
