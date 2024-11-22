@@ -214,7 +214,7 @@ jobs:
           # echo "cmd op ==> $(npm version patch -m "Bump version to %s" | grep 'v' | cut -d' ' -f3)"
           # NEW_VERSION="$(npm version patch -m "Bump version to %s" | grep 'v' | cut -d' ' -f3)"  # Get the new version number
           # NEW_VERSION="v2.0.7"  # Get the new version number
-          NEW_VERSION=$(npm version $VERSION_BUMP -m "Bump version to %s")
+          NEW_VERSION=$(npm version patch -m "Bump version to %s")
 
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV  # Save the new version to the environment variable
 
