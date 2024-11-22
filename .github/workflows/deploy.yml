@@ -186,11 +186,20 @@ on:
       - main  # Trigger on pushes to the 'main' branch
 
 jobs:
+  setup:
+    name: Setup
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    outputs:
+      branch_name: ${GITHUB_REF##*/}
+
   bump_version:
     name: Bump Patch Version
     runs-on: ubuntu-latest
     permissions:
       contents: write  # Required to push changes to the repository
+    needs: [ setup ]
 
     steps:
       - name: Checkout Repository
@@ -208,6 +217,8 @@ jobs:
 
       - name: Decide package Bump Type
         run: |
+          echo "Branch Name ===> ${{ needs.setup.outputs.branch_name }}"
+
           latest_commit_message=$(git log -1 --pretty=%B)
           echo "$latest_commit_message"
  
@@ -233,7 +244,10 @@ jobs:
         run: |
 
           # Bump the version (VERSION_BUMP) in package.json
-          npm version $VERSION_BUMP -m "Bump version to %s"
+          # npm version $VERSION_BUMP -m "Bump version to %s"
+
+          npm version prepatch --preid=beta -m "Bump version to %s"
+
 
           NEW_VERSION=$(jq -r '.version' package.json)
 
