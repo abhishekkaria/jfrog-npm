@@ -193,6 +193,10 @@ jobs:
 
     outputs:
       branch_name: ${GITHUB_REF##*/}
+    
+      - name: Decide package Bump Type
+          run: |
+            echo "Branch Name ===> ${{ needs.setup.outputs.branch_name }}"
 
   bump_version:
     name: Bump Patch Version
