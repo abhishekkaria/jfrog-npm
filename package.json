@@ -1,10 +1,6 @@
 {
   "name": "@jfrog-lilly/my-button-package",
-<<<<<<< HEAD
   "version": "3.0.1-beta.0",
-=======
-  "version": "3.0.1",
->>>>>>> 10107de57a99eddbca017c6f4eed5eabbf13932c
   "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

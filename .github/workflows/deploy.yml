@@ -193,11 +193,17 @@ jobs:
 
     outputs:
       branch_name: ${GITHUB_REF##*/}
+      new_version: ${{ steps.outputs.new_version }}
     
     steps:
       - name: Decide package Bump Type
         run: |
           echo "Branch Name >>>>>>>>>>>> ${{ needs.setup.outputs.branch_name }}"
+
+          NEW_VERSION_1=10.0.0
+
+          echo "new_version=$NEW_VERSION_1" >> $GITHUB_ENV
+          echo "::set-output name=new_version::$NEW_VERSION_1"
 
   bump_version:
     name: Bump Patch Version
@@ -222,7 +228,7 @@ jobs:
 
       - name: Decide package Bump Type
         run: |
-          echo "Branch Name ===> ${{ needs.setup.outputs.branch_name }}"
+          echo "new_version from setup ===> ${{ needs.setup.outputs.new_version }}"
 
           latest_commit_message=$(git log -1 --pretty=%B)
           echo "$latest_commit_message"
