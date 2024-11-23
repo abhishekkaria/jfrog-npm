@@ -202,6 +202,14 @@ jobs:
 
           NEW_VERSION_1=10.0.0
 
+          # echo "new_version=$NEW_VERSION_1" >> $GITHUB_ENV
+          # echo "::set-output name=new_version::$NEW_VERSION_1"
+
+
+           # Set the environment variable
+          echo "new_version=$NEW_VERSION_1" >> $GITHUB_ENV
+          
+          # Set the output value using the new method
           echo "new_version=$NEW_VERSION_1" >> $GITHUB_ENV
           echo "::set-output name=new_version::$NEW_VERSION_1"
 
