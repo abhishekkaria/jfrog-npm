@@ -188,6 +188,7 @@ on:
 jobs:
   setup:
     name: Setup
+    id: setup
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
@@ -236,7 +237,7 @@ jobs:
 
       - name: Decide package Bump Type
         run: |
-          echo "new_version from setup ===> ${{ needs.setup.outputs.new_version }}"
+          echo "new_version from setup ===> ${{ steps.setup.outputs.new_version }}"
 
           latest_commit_message=$(git log -1 --pretty=%B)
           echo "$latest_commit_message"
