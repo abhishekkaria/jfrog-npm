@@ -1,0 +1,26 @@
+name: CD Workflow on PR Merge
+
+on:
+  pull_request:
+    types:
+      - closed
+
+jobs:
+  pr-merged:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Get PR title
+        run: |
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          echo "PR Title is: $PR_TITLE"
+          echo "PR_TITLE=$PR_TITLE" >> $GITHUB_ENV  # Save PR title to an environment variable
+
+      - name: Run CD with PR Title
+        run: |
+          # Your CD pipeline logic here
+          echo "Deploying with PR title: $PR_TITLE"
+          # Example: You can use PR_TITLE for deployment logic or pass it to another service
