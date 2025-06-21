@@ -1,11 +1,14 @@
 name: CD Workflow on PR Merge
 
+# on:
+#   pull_request:
+#     types:
+#       - closed
+#     branches:
+#       - main
+
 on:
-  pull_request:
-    types:
-      - closed
-    branches:
-      - main
+  workflow_dispatch:
 
 jobs:
   pr-merged:
