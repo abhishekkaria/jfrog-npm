@@ -1,0 +1,110 @@
+name: Auto Version and Tag
+
+# on:
+#   pull_request:
+#     types: [closed]
+
+on:
+  push:
+    branches:
+      - '**'  
+
+jobs:
+  version-and-tag:
+    if: github.event.pull_request.merged == false
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Needed to access tag history
+
+      - name: Set stage based on target branch
+        run: |
+          if [[ "${{ github.base_ref }}" == "main" ]]; then
+            echo "STAGE=prod" >> $GITHUB_ENV
+          elif [[ "${{ github.base_ref }}" == "qa" ]]; then
+            echo "STAGE=qa" >> $GITHUB_ENV
+          else
+            echo "STAGE=dev" >> $GITHUB_ENV
+          fi
+
+      - name: Get PR title
+        run: echo "PR_TITLE=${{ github.event.pull_request.title }}" >> $GITHUB_ENV
+
+      - name: Calculate version
+        run: |
+          echo "🔧 Stage: $STAGE"
+          echo "🔧 PR title: $PR_TITLE"
+
+          # Determine bump type
+          if [[ "$STAGE" == "prod" ]]; then
+            if [[ "$PR_TITLE" == *"#major"* ]]; then
+              BUMP="major"
+            elif [[ "$PR_TITLE" == *"#minor"* ]]; then
+              BUMP="minor"
+            elif [[ "$PR_TITLE" == *"#patch"* ]]; then
+              BUMP="patch"
+            else
+              BUMP="patch"
+            fi
+          else
+            BUMP="patch"  # alpha/beta builds always use patch-level bumps
+          fi
+
+          # Get latest tag (handle first release fallback)
+          if [[ "$STAGE" == "prod" ]]; then
+            LATEST_TAG=$(git tag --list "v*" --sort=-creatordate | grep -v "/" | head -n 1)
+          else
+            LATEST_TAG=$(git tag --list "$STAGE/v*" --sort=-creatordate | head -n 1)
+          fi
+
+          if [[ -z "$LATEST_TAG" ]]; then
+            BASE_VERSION="0.0.0"
+            echo "ℹ️ No previous tag found, using fallback version $BASE_VERSION"
+          else
+            BASE_VERSION=$(echo $LATEST_TAG | sed -E 's/.*v([0-9]+\.[0-9]+\.[0-9]+).*/\1/')
+            echo "🔍 Found previous tag: $LATEST_TAG → Base: $BASE_VERSION"
+          fi
+
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$BASE_VERSION"
+
+          # Bump version
+          case "$BUMP" in
+            major)
+              MAJOR=$((MAJOR + 1))
+              MINOR=0
+              PATCH=0
+              ;;
+            minor)
+              MINOR=$((MINOR + 1))
+              PATCH=0
+              ;;
+            patch)
+              PATCH=$((PATCH + 1))
+              ;;
+          esac
+
+          NEW_BASE="${MAJOR}.${MINOR}.${PATCH}"
+
+          if [[ "$STAGE" == "dev" ]]; then
+            COUNT=$(git tag --list "dev/v${NEW_BASE}-alpha.*" | wc -l)
+            VERSION_TAG="dev/v${NEW_BASE}-alpha.$((COUNT + 1))"
+          elif [[ "$STAGE" == "qa" ]]; then
+            COUNT=$(git tag --list "qa/v${NEW_BASE}-beta.*" | wc -l)
+            VERSION_TAG="qa/v${NEW_BASE}-beta.$((COUNT + 1))"
+          else
+            VERSION_TAG="v${NEW_BASE}"
+          fi
+
+          echo "🔖 Version to tag: $VERSION_TAG"
+          echo "VERSION_TAG=$VERSION_TAG" >> $GITHUB_ENV
+
+      - name: Create Git tag
+        run: |
+          git config user.name "abhishek karia"
+          git config user.email "abhishek.karia.007@gmail.com"
+          git tag "$VERSION_TAG"
+          git push origin "$VERSION_TAG"
