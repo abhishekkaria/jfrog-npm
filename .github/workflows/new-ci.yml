@@ -12,6 +12,8 @@ on:
 jobs:
   version-and-tag:
     if: github.event.pull_request.merged == false
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
