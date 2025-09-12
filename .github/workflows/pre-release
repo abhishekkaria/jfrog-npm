@@ -1,0 +1,49 @@
+name: Manual Pre-Release (Alpha Tag)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  alpha-release:
+    if: github.ref != 'refs/heads/main' && github.ref != 'refs/heads/qa'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Important: needed to access all tags
+
+      - name: Set up Git
+        run: |
+          git config user.name "github-actions"
+          git config user.email "ci@github.com"
+
+      - name: Calculate next alpha tag
+        id: versioning
+        run: |
+          echo "🔍 Checking existing alpha tags..."
+          TAGS=$(git tag --list "dev/v*-alpha.*")
+          
+          if [[ -z "$TAGS" ]]; then
+            BASE_VERSION="0.1.0"
+            PRE_NUM=1
+          else
+            # Extract base versions and find the highest
+            BASE_VERSION=$(echo "$TAGS" | sed -E 's/dev\/v([0-9]+\.[0-9]+\.[0-9]+)-alpha\.[0-9]+/\1/' | sort -V | tail -n 1)
+            
+            # Get latest alpha.N for that version
+            LAST_TAG=$(echo "$TAGS" | grep "dev/v${BASE_VERSION}-alpha." | sort -V | tail -n 1)
+            LAST_NUM=$(echo "$LAST_TAG" | sed -E 's/.*-alpha\.([0-9]+)/\1/')
+            PRE_NUM=$((LAST_NUM + 1))
+          fi
+
+          VERSION_TAG="dev/v${BASE_VERSION}-alpha.${PRE_NUM}"
+          echo "VERSION_TAG=$VERSION_TAG" >> $GITHUB_ENV
+          echo "::set-output name=tag::$VERSION_TAG"
+          echo "✅ Next alpha tag: $VERSION_TAG"
+
+      - name: Create and push alpha tag
+        run: |
+          git tag $VERSION_TAG
+          git push origin $VERSION_TAG
