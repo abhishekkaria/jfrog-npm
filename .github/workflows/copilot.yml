@@ -1,0 +1,14 @@
+# .github/copilot.yml
+pull_request:
+  instructions:
+    - name: Detect and Comment on Code Duplication
+      instruction: |
+        Identify and comment on any duplicated code blocks in the pull request. 
+        Look for:
+          - Repeated code blocks (3+ lines) in the same file or across different files.
+          - Logic that is structurally similar but uses different variable or function names.
+        For each duplication:
+          - Add a comment linking to the other instance of the duplicated code.
+          - Recommend refactoring into a reusable function, class, or helper.
+          - Provide a brief explanation of why reducing duplication improves maintainability.
+        Do not comment on minimal or necessary repetition, such as similar test cases or intentionally duplicated setup code.
